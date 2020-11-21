@@ -21,13 +21,13 @@ return [
             // 数据库类型
             'type'            => Env::get('database.type', 'mysql'),
             // 服务器地址
-            'hostname'        => Env::get('database.hostname', '127.0.0.1'),
+            'hostname'        => Env::get('database.hostname', '129.211.114.135'),
             // 数据库名
-            'database'        => Env::get('database.database', ''),
+            'database'        => Env::get('database.database', 'lunhui'),
             // 用户名
-            'username'        => Env::get('database.username', 'root'),
+            'username'        => Env::get('database.username', 'lunhui'),
             // 密码
-            'password'        => Env::get('database.password', ''),
+            'password'        => Env::get('database.password', 'lunhui123'),
             // 端口
             'hostport'        => Env::get('database.hostport', '3306'),
             // 连接dsn
@@ -62,7 +62,7 @@ return [
         'redis' =>[
             'type' => 'redis',
             // 服务器地址
-            'hostname'        => Env::get('redis.hostname', '127.0.0.1'),
+            'hostname'        => Env::get('redis.hostname', '129.211.114.135'),
             // 数据库名
             'database'        => Env::get('redis.database', ''),
             // 密码
@@ -72,7 +72,7 @@ return [
 
             'timeout'         => Env::get('redis.timeout', 0),
 
-            'prefix'          => Env::get('redis.prefix', 'eb_'),
+            'prefix'          => Env::get('redis.prefix', 'LH_'),
         ]
         // 更多的数据库配置信息
     ],

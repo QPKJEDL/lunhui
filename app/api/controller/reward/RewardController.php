@@ -48,7 +48,7 @@ Class RewardController{
      * 我接的任务
      */
     public function myGetTask(Request $request){
-        $uid=8;
+        $uid = $request->uid();
         $post = UtilService::postMore([
             ['status', 0],
             ['lastid', 0]
@@ -90,7 +90,7 @@ Class RewardController{
     * 商家中心，首页数据统计
     */
     public static function putData(Request $request){
-        $uid=7;
+        $uid = $request->uid();
         $data=Reward::getPutData($uid);
         return app('json')->successful($data);
     }
@@ -99,7 +99,7 @@ Class RewardController{
      * 商家的所有任务
      */
     public static function myPutTask(Request $request){
-        $uid=7;
+        $uid = $request->uid();
         $post = UtilService::postMore([
             ['status'],
             ['lastid', 0]
@@ -115,7 +115,7 @@ Class RewardController{
      * 悬赏任务初步编辑支付
      */
     public function taskPutPay(Request $request){
-        $uid=7;
+        $uid = $request->uid();
         $post = UtilService::postMore([
             ['logo_url', ''],
             ['type', 0],
@@ -183,7 +183,7 @@ Class RewardController{
      * 商家悬赏任务下的报名列表
      */
     public function putTaskGetList(Request $request){
-        $uid=7;
+        $uid = $request->uid();
         $post = UtilService::postMore([
             ['task_put_id'],
             ['lastid',0]
@@ -200,7 +200,7 @@ Class RewardController{
      * 商家审核用户的任务,通过
      */
     public function checkPassGet(Request $request){
-        $uid=7;
+        $uid = $request->uid();
         $post = UtilService::postMore([
             ['task_put_id'],
             ['task_get_uid',0]
@@ -219,7 +219,7 @@ Class RewardController{
      * 商家审核用户的任务，驳回
      */
     public function checkRejectGet(Request $request){
-        $uid=7;
+        $uid = $request->uid();
         $post = UtilService::postMore([
             ['task_put_id'],
             ['task_get_uid',0]
@@ -240,7 +240,7 @@ Class RewardController{
      * 用户报名任务
      */
     public function taskGet(Request $request){
-        $uid=8;
+        $uid = $request->uid();
         $post = UtilService::postMore([
             ['task_put_id']
         ], $request);
@@ -257,7 +257,7 @@ Class RewardController{
      * 用户上传任务完成信息，图或者手机号
      */
     public function taskUp(Request $request){
-        $uid=8;
+        $uid = $request->uid();
         $post = UtilService::postMore([
             ['task_put_id'],
             ['upload']
@@ -280,7 +280,7 @@ Class RewardController{
      * 用户取消任务
      */
     public function taskGetUndo(Request $request){
-        $uid=8;
+        $uid = $request->uid();
         $post = UtilService::postMore([
             ['task_put_id']
         ], $request);
@@ -299,7 +299,7 @@ Class RewardController{
      * 账单明细
      */
     public function myBill(Request $request){
-        $uid=7;
+        $uid = $request->uid();
         $post = UtilService::postMore([
             ['lastid',0],
             ['date',0]

@@ -34,27 +34,6 @@ Route::any('routine/notify', 'wechat.AuthController/notify');//小程序支付�
 
 
 
-//悬赏任务
-Route::post('reward/task_list', 'reward.RewardController/lst')->name('taskList');//大厅列表
-Route::post('reward/task_find', 'reward.RewardController/find')->name('taskFind');//任务搜索
-
-Route::post('reward/my_get_task', 'reward.RewardController/myGetTask')->name('taskGetList');//我的任务
-Route::post('reward/task_info', 'reward.RewardController/taskInfo')->name('taskInfo');//任务详情
-
-Route::post('reward/put_home', 'reward.RewardController/thePutHomePage')->name('taskHome');//商家主页
-Route::post('reward/task_top_data', 'reward.RewardController/putData')->name('taskData');//商家发布任务
-Route::post('reward/my_put_task', 'reward.RewardController/myPutTask')->name('taskPutList');//商家所有的任务列表
-Route::post('reward/task_put_pay', 'reward.RewardController/taskPutPay')->name('taskPay');//商家发布任务
-Route::post('reward/my_put_get_list', 'reward.RewardController/putTaskGetList')->name('taskPutGetLst');//商家悬赏任务下的报名列表
-Route::post('reward/check_pass_get', 'reward.RewardController/checkPassGet')->name('taskCheckGet');//商家通过用户报名任务
-Route::post('reward/check_reject_get', 'reward.RewardController/checkRejectGet')->name('taskRejectGet');//商家驳回用户报名任务
-
-
-Route::post('reward/get_task', 'reward.RewardController/taskGet')->name('taskGet');//用户报名任务
-Route::post('reward/get_up', 'reward.RewardController/taskUp')->name('taskUp');//用户上传任务完成数据
-Route::post('reward/get_undo', 'reward.RewardController/taskGetUndo')->name('taskUndo');//用户取消任务
-
-Route::post('reward/my_bill', 'reward.RewardController/myBill')->name('myBill');//用户取消任务
 
 
 
@@ -190,8 +169,30 @@ Route::group(function () {
     Route::get('order/nopay', 'order.StoreOrderController/get_noPay')->name('getNoPay');//获取未支付订单
 
 
-    //悬赏任务
-    Route::get('reward/lst', 'reward.RewardController/lst')->name('taskList');//首页列表
+    //悬赏任务--开始
+    Route::post('reward/task_list', 'reward.RewardController/lst')->name('taskList');//大厅列表
+    Route::post('reward/task_find', 'reward.RewardController/find')->name('taskFind');//任务搜索
+
+    Route::post('reward/my_get_task', 'reward.RewardController/myGetTask')->name('taskGetList');//我的任务
+    Route::post('reward/task_info', 'reward.RewardController/taskInfo')->name('taskInfo');//任务详情
+
+
+    Route::post('reward/put_home', 'reward.RewardController/thePutHomePage')->name('taskHome');//商家主页
+    Route::post('reward/task_top_data', 'reward.RewardController/putData')->name('taskData');//商家发布任务
+    Route::post('reward/my_put_task', 'reward.RewardController/myPutTask')->name('taskPutList');//商家所有的任务列表
+    Route::post('reward/task_put_pay', 'reward.RewardController/taskPutPay')->name('taskPay');//商家发布任务
+    Route::post('reward/my_put_get_list', 'reward.RewardController/putTaskGetList')->name('taskPutGetLst');//商家悬赏任务下的报名列表
+    Route::post('reward/check_pass_get', 'reward.RewardController/checkPassGet')->name('taskCheckGet');//商家通过用户报名任务
+    Route::post('reward/check_reject_get', 'reward.RewardController/checkRejectGet')->name('taskRejectGet');//商家驳回用户报名任务
+
+
+    Route::post('reward/get_task', 'reward.RewardController/taskGet')->name('taskGet');//用户报名任务
+    Route::post('reward/get_up', 'reward.RewardController/taskUp')->name('taskUp');//用户上传任务完成数据
+    Route::post('reward/get_undo', 'reward.RewardController/taskGetUndo')->name('taskUndo');//用户取消任务
+    Route::post('reward/my_bill', 'reward.RewardController/myBill')->name('myBill');//账单明细
+    //--结束
+
+
 
 })->middleware(\app\http\middleware\AllowOriginMiddleware::class)->middleware(\app\http\middleware\AuthTokenMiddleware::class, true);
 //未授权接口

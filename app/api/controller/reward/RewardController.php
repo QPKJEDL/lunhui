@@ -11,6 +11,8 @@ use app\models\reward\RewardGet;
 use think\exception\ValidateException;
 use crmeb\services\UtilService;
 use app\Request;
+use think\facade\Config;
+
 /*
  * 悬赏任务类
  */
@@ -29,19 +31,19 @@ Class RewardController{
     }
 
     /*
-     * 根据任务编号搜索
+     * 根据任务标题搜索
      */
     public function find(Request $request){
         $post = UtilService::postMore([
-            ['order_sn', '']
+            ['title', '']
         ], $request);
-        $orderSn=$post["order_sn"];
-        if($orderSn){
-            $info=Reward::getTheTask($orderSn);
+        $title=$post["title"];
+        if(!empty($title)){
+            $list=Reward::getTheTask($title);
         }else{
-            $info=Reward::getTaskList();
+            $list=Reward::getTaskList();
         }
-        return app('json')->successful($info);
+        return app('json')->successful($list);
     }
 
     /*
@@ -63,12 +65,12 @@ Class RewardController{
      * 任务详情
      */
     public function taskInfo(Request $request){
+        $uid=$request->uid();
         $post = UtilService::postMore([
             ['task_put_id', 0]
         ], $request);
         $taskId=$post["task_put_id"];
-        $info=Reward::getTaskInfo($taskId);
-        $info["step"]=json_decode($info["step"],true);
+        $info=Reward::getTaskInfo($uid,$taskId);
         return app('json')->successful($info);
     }
 
@@ -85,6 +87,20 @@ Class RewardController{
         $info=Reward::getPutHomeList($uid,$lastId);
         return app('json')->successful($info);
     }
+
+    /*
+     *我的主页
+     */
+    public function myHomePage(Request $request){
+        $uid=$request->uid();
+        $post = UtilService::postMore([
+            ['lastid', 0]
+        ], $request);
+        $lastId=(int)$post["lastid"];
+        $info=Reward::getPutHomeList($uid,$lastId);
+        return app('json')->successful($info);
+    }
+
 
     /*
     * 商家中心，首页数据统计
@@ -112,10 +128,10 @@ Class RewardController{
     }
 
     /*
-     * 悬赏任务初步编辑支付
+     * 悬赏任务支付
      */
     public function taskPutPay(Request $request){
-        $uid = $request->uid();
+        $uid =$request->uid();
         $post = UtilService::postMore([
             ['logo_url', ''],
             ['type', 0],
@@ -174,23 +190,55 @@ Class RewardController{
         if(!$res["back"]){
             return app('json')->fail($res["msg"]);
         }
-        return app('json')->successful($res["back"]);
+        $res["task_put_id"]=$res["back"];
+        unset($res["back"]);
+        unset($res["msg"]);
+        return app('json')->successful($res);
+
+    }
+
+    /*
+     * 发布任务
+     */
+    public function taskPutOpen(Request $request){
+        $uid =$request->uid();
+        $post = UtilService::postMore([
+            ['task_put_id', ''],
+            ['step', ''],
+        ], $request);
+        if(empty($post['task_put_id'])){
+            return app('json')->fail('请选择任务');
+        }
+        if(empty($post['step'])){
+            return app('json')->fail('请编辑任务步骤');
+        }
+        $taskPutId=(int)$post["task_put_id"];
+        $step=json_decode($post["step"],true);
+        $res=Reward::taskOpen($uid,$taskPutId,$step);
+
+        if(!$res["back"]){
+            return app('json')->fail($res["msg"]);
+        }
+        unset($res["back"]);
+        return app('json')->successful("发布成功");
 
     }
 
 
     /*
-     * 商家悬赏任务下的报名列表
+     * 商家悬赏任务下的报名列表审单
      */
     public function putTaskGetList(Request $request){
         $uid = $request->uid();
         $post = UtilService::postMore([
             ['task_put_id'],
-            ['lastid',0]
+            ['lastid',0],
+            ['status'],
         ], $request);
         $taskPutId=(int)$post["task_put_id"];
         $lastId=(int)$post["lastid"];
-        $list=Reward::myPutGetList($uid,$taskPutId,$lastId);
+        $status=(int)$post["status"];
+        $list=Reward::myPutGetList($taskPutId,$lastId,$status);
         return app('json')->successful($list);
     }
 
@@ -202,12 +250,14 @@ Class RewardController{
     public function checkPassGet(Request $request){
         $uid = $request->uid();
         $post = UtilService::postMore([
+            ['task_get_id'],
             ['task_put_id'],
             ['task_get_uid',0]
         ], $request);
+        $taskGetId=(int)$post["task_get_id"];
         $taskPutId=(int)$post["task_put_id"];
         $taskGetUid=(int)$post["task_get_uid"];
-        $res=Reward::putCheckPassGet($uid,$taskPutId,$taskGetUid);
+        $res=Reward::putCheckPassGet($uid,$taskGetId,$taskPutId,$taskGetUid);
         if(!$res["back"]){
             return app('json')->fail($res["msg"]);
         }
@@ -221,12 +271,16 @@ Class RewardController{
     public function checkRejectGet(Request $request){
         $uid = $request->uid();
         $post = UtilService::postMore([
+            ['task_get_id'],
             ['task_put_id'],
-            ['task_get_uid',0]
+            ['task_get_uid',0],
+            ['remark']
         ], $request);
+        $taskGetId=(int)$post["task_get_id"];
         $taskPutId=(int)$post["task_put_id"];
         $taskGetUid=(int)$post["task_get_uid"];
-        $res=Reward::putCheckRejectGet($uid,$taskPutId,$taskGetUid);
+        $remark=htmlspecialchars($post["remark"]);
+        $res=Reward::putCheckRejectGet($uid,$taskGetId,$taskPutId,$taskGetUid,$remark);
         if(!$res["back"]){
             return app('json')->fail($res["msg"]);
         }
@@ -249,27 +303,29 @@ Class RewardController{
         if(!$res["back"]){
             return app('json')->fail($res["msg"]);
         }
-        return app('json')->successful($res["msg"]);
-
+        unset($res["back"]);
+        return app('json')->successful($res);
     }
 
     /*
      * 用户上传任务完成信息，图或者手机号
      */
     public function taskUp(Request $request){
-        $uid = $request->uid();
+        $uid =$request->uid();
         $post = UtilService::postMore([
+            ['task_get_id'],
             ['task_put_id'],
             ['upload']
         ], $request);
         $up=$post["upload"];
+        $taskGetId=(int)$post["task_get_id"];
         $taskPutId=(int)$post["task_put_id"];
 
         if(empty($up)){
             return app('json')->fail("请上传数据");
         }
-
-        $res=RewardGet::upTaskData($uid,$taskPutId,$up);
+        $up=json_decode($up,true);
+        $res=RewardGet::upTaskData($uid,$taskGetId,$taskPutId,$up);
         if(!$res["back"]){
             return app('json')->fail($res["msg"]);
         }
@@ -282,17 +338,18 @@ Class RewardController{
     public function taskGetUndo(Request $request){
         $uid = $request->uid();
         $post = UtilService::postMore([
+            ['task_get_id'],
             ['task_put_id']
         ], $request);
+        $taskGetId=(int)$post["task_get_id"];
         $taskPutId=(int)$post["task_put_id"];
-        $res=RewardGet::undoTask($uid,$taskPutId);
+        $res=RewardGet::undoTask($uid,$taskGetId,$taskPutId);
         if(!$res["back"]){
             return app('json')->fail($res["msg"]);
         }
         return app('json')->successful($res["msg"]);
 
     }
-
 
 
     /*

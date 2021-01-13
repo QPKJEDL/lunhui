@@ -277,6 +277,8 @@ Class Reward extends BaseModel{
                 "title"=>$data["title"],
                 "plat_name"=>$data["plat_name"],
                 "content"=>$data["content"],
+                "sub_time"=>$data["sub_time"],
+                "check_time"=>$data["check_time"],
                 "task_people"=>$data["task_people"],
                 "total_num"=>$data["task_people"],
                 "task_price"=>$task_price,
@@ -377,7 +379,7 @@ Class Reward extends BaseModel{
             }
             Db::commit();
             $res["back"]=true;
-            $res["msg"]="支付成功";
+            $res["msg"]="发布成功";
             return $res;
 
         }catch (\Exception $e) {
@@ -478,6 +480,7 @@ Class Reward extends BaseModel{
                 $parBill=[
                     "uid"=>$parentId,
                     "link_id"=>$taskGetInfo["id"],
+                    "pm"=>1,//0 = 支出 1 = 获得
                     "title"=>"任务完成奖励返佣",
                     "category"=>"now_money",
                     "type"=>"task_fee",
@@ -504,6 +507,7 @@ Class Reward extends BaseModel{
             $bill=[
                 "uid"=>$taskGetUid,
                 "link_id"=>$taskPutId,
+                "pm"=>1,//0 = 支出 1 = 获得
                 "title"=>"悬赏任务完成奖励",
                 "category"=>"now_money",
                 "type"=>"done_task",
@@ -606,7 +610,7 @@ Class Reward extends BaseModel{
         }
         $end=$start+86400;
         $where[]=[['uid','=',$uid]];
-        $list=Db::name("user_bill")->where($where)->whereTime("add_time","between",[$start,$end])->field("id,number,mark,add_time")->order("add_time","desc")->limit(10)->select()->toArray();
+        $list=Db::name("user_bill")->where($where)->whereTime("add_time","between",[$start,$end])->field("id,pm,number,mark,add_time")->order("add_time","desc")->limit(10)->select()->toArray();
         foreach ($list as $key=>$value){
             $list[$key]["creatime"]=date("Y-m-d H:i:s",$list[$key]["add_time"]);
             $list[$key]["number"]=$list[$key]["number"]*100;
@@ -615,43 +619,5 @@ Class Reward extends BaseModel{
             unset( $list[$key]["mark"]);
         }
         return $list;
-    }
-
-
-    //-----statr
-    /*
-     * 报名的任务，更新过期
-     */
-    public static function taskOver(){
-        //获取所有已报名和带审核的报名任务列表
-        $getList=RewardGet::where("status","in","1,2")->select()->toArray();
-
-        foreach ($getList as $key=>$value){
-            $taskInfo=Reward::where("id",$value["task_put_uid"])->find();
-            if($taskInfo){
-                $over=time()-$value["creatime"];
-                $isOver=$over-$taskInfo["sub_time"]*3600;
-                if($isOver>0){
-                    return;
-                }
-                return;
-            }
-            return;
-        }
-    }
-
-    /*
-     * 报名任务状态更新，任务报名数量-1
-     */
-    public static function taskStatus($uid,$taskPutId){
-        // 启动事务
-        Db::startTrans();
-        try {
-            Db::commit();
-            return;
-        }catch (\Exception $e) {
-            Db::rollback();
-            return ;
-        }
     }
 }

@@ -203,7 +203,7 @@ Route::group(function () {
     Route::post('reward/task_info', 'reward.RewardController/taskInfo')->name('taskInfo');//任务详情
     Route::post('reward/put_home', 'reward.RewardController/thePutHomePage')->name('taskHome');//商家主页
     Route::post('reward/my_home', 'reward.RewardController/myHomePage')->name('myHome');//我的主页
-    Route::post('reward/task_top_data', 'reward.RewardController/putData')->name('taskData');//商家发布任务
+    Route::post('reward/task_top_data', 'reward.RewardController/putData')->name('taskData');//商家top数据
     Route::post('reward/my_put_task', 'reward.RewardController/myPutTask')->name('taskPutList');//商家所有的任务列表
     Route::post('reward/task_put_pay', 'reward.RewardController/taskPutPay')->name('taskPay');//商家支付任务
     Route::post('reward/task_put_open', 'reward.RewardController/taskPutOpen')->name('taskOpen');//商家支付任务

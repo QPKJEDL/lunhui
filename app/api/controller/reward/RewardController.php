@@ -134,15 +134,15 @@ Class RewardController{
         $uid =$request->uid();
         $post = UtilService::postMore([
             ['logo_url', ''],
-            ['type', 0],
+            ['type', ],
             ['title', ''],
             ['plat_name', ''],
-            ['sub_time', 0],
-            ['check_time', 0],
+            ['sub_time', ],
+            ['check_time', ],
             ['content','' ],
-            ['task_price', 0],
-            ['per_price', 0],
-            ['task_people', 0]
+            ['task_price', ],
+            ['per_price', ],
+            ['task_people', ]
         ], $request);
 
         if(empty($post['logo_url'])){
@@ -226,7 +226,7 @@ Class RewardController{
 
 
     /*
-     * 商家悬赏任务下的报名列表审单
+     * 商家悬赏任务下的报名列表-审单
      */
     public function putTaskGetList(Request $request){
         $uid = $request->uid();

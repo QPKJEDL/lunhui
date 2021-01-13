@@ -47,11 +47,8 @@ Class RewardGet extends BaseModel{
         foreach ($list as $key=>$value){
             $list[$key]["word"]=self::taskWord($value["status"]);
             $list[$key]["remark"]=self::taskWord($value["status"]);
-            $list[$key]["creatime"]=date("Y-m-d H:i:s",$list[$key]["creatime"]);
             if($list[$key]["status"]==2){
-                $list[$key]["savetime"]=date("Y-m-d H:i:s",$list[$key]["uptime"]);
-            }else{
-                $list[$key]["savetime"]=date("Y-m-d H:i:s",$list[$key]["savetime"]);
+                $list[$key]["savetime"]=$list[$key]["uptime"];
             }
             unset($list[$key]["paytime"]);
         }
